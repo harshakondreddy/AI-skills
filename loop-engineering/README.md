@@ -50,55 +50,25 @@ Plus explicit report shapes for *blocked* and *failed* — not just *done*.
 
 ## Install
 
-**Claude Code** — clone into your skills directory:
+This skill lives in the `loop-engineering/` folder of the
+[AI-skills repository](https://github.com/harshakondreddy/AI-skills).
 
-```bash
-git clone https://github.com/<you>/loop-engineering.git ~/.claude/skills/loop-engineering
-```
+### Claude Code
 
-**Any other agent** — clone anywhere, then create the file your tool reads in *your* project
-and point it at this repo. The repo ships only `AGENTS.md`; the paths below are files you
-create, not files you'll find here.
+Download or clone AI-skills, then copy the entire `loop-engineering`
+folder into `~/.claude/skills/loop-engineering/`.
 
-| Tool | Create this in your project | How |
-|---|---|---|
-| Codex, Zed, Aider, Jules, Cline | `AGENTS.md` | copy this repo's `AGENTS.md` |
-| Antigravity | `AGENTS.md` or `.agents/rules/loop-engineering.md` | copy as-is |
-| Gemini CLI | `GEMINI.md` or `AGENTS.md` | copy as-is |
-| Copilot / VS Code | `.github/copilot-instructions.md` or `AGENTS.md` | copy as-is |
-| Windsurf / Devin | `.windsurf/rules/` or `.devin/rules/loop-engineering.md` | copy as-is |
-| Cursor | `.cursor/rules/loop-engineering.mdc` | copy, then **add the frontmatter below** |
+Keep `SKILL.md`, `AGENTS.md`, and `references/` together.
 
-Cursor won't activate an `.mdc` rule without YAML frontmatter. Prepend this before the copied
-content:
+### Other Agents
 
-```yaml
----
-description: Structured PLAN/ACT/OBSERVE/VERIFY/REFLECT/REPORT loop for infrastructure and coding tasks
-alwaysApply: false
----
-```
+Read [SKILL.md](SKILL.md) and follow your agent's supported method for
+loading skills or project instructions.
 
-`alwaysApply: false` plus a description makes it agent-requested — Cursor pulls it in when the
-task matches instead of loading it on every message.
+[AGENTS.md](AGENTS.md) provides additional guidance. If you incorporate
+its instructions into an existing project instruction file, merge them
+rather than overwriting existing instructions, and update relative paths
+to point to this skill's `SKILL.md` and `references/` folder.
 
-Wherever it lands, keep `SKILL.md` and `references/` reachable from that file, since `AGENTS.md`
-points at them by relative path. Simplest is to clone the whole repo into the project (or as a
-submodule) and copy `AGENTS.md` to the root.
-
-[AGENTS.md](https://agents.md) is the Agentic AI Foundation standard, so most tools read it
-without extra setup.
-
-## Files
-
-```
-├── SKILL.md                              the skill
-├── references/full-initiative-template.md template for multi-system work
-├── AGENTS.md                             portability notes for non-Claude agents
-├── README.md
-└── LICENSE
-```
-
-## License
-
-MIT — see [`LICENSE`](LICENSE).
+Support varies by tool and version; this repository does not establish
+compatibility with every agent.
