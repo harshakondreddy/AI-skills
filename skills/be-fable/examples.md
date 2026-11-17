@@ -19,6 +19,7 @@ Sections:
 - [Writing](#writing)
 - [Research](#research)
 - [Math](#math)
+- [Planning](#planning)
 
 ---
 
@@ -2220,3 +2221,342 @@ and take the 95th percentile of that.
 Checked by simulation with one million requests per case. The three results in the table are
 from those runs. In the constructed case, A is slow on 4.9% of requests and B is slow on a
 different 4.9%.
+
+---
+
+## Planning
+
+Use for project plans, migration plans, maintenance windows, schedules, and breaking work into
+tasks.
+
+### Questions to ask first
+
+- What is the goal, and how will we know it has been reached?
+- What is the deadline, and is it fixed?
+- Who and what is available: people, hours, budget, tools, access?
+- Which constraints apply: change windows, freeze dates, approvals, other teams?
+- What must not break: uptime, data, compliance?
+- What has already been decided or done?
+
+### Assumptions
+
+State:
+
+- The team size, the hours available, and the start date you planned with.
+- The unknowns the plan depends on, and what you assumed for each.
+- What the estimates are based on.
+
+Check, do not assume:
+
+- Lead times outside your control: approvals, access, procurement, another team's work.
+- Fixed dates.
+- That the estimates add up to less than the time available.
+
+Never assume:
+
+- Every hour of a working day is available for the work.
+- A step that worked in a test will take the same time in production.
+- A rollback exists because nobody said it does not.
+
+### Steps
+
+1. Write the goal as an outcome with a check that shows it is done.
+2. List the constraints and the fixed dates.
+3. Work backward from the done state. List the deliverables, then the tasks for each.
+4. Order the tasks by dependency. Mark what can run in parallel. Find the longest chain.
+5. Estimate each task as a range. Add up the low ends and the high ends. Compare both with
+   the time and capacity available.
+6. Put the least-known item first, as a short test, so the plan can change early.
+7. Add checkpoints with a go or no-go test. For a change to a live system, add the backup,
+   the rollback, and the point of no return.
+8. Name an owner for each task, or write "owner needed".
+9. List the main risks, each with the sign that it is happening and the response.
+10. Present the goal, the timeline, the tasks, the risks, the open questions, and the first
+    step to take now.
+
+### Decision rules
+
+| If | Then |
+|---|---|
+| The estimates add up to more than the time available | Say so first. Give options: cut scope, move the date, or add people and count their ramp-up time. Do not shrink the estimates to fit. |
+| A task is longer than about two days or holds an unknown | Split it, or put a time-boxed investigation in front of it. |
+| The plan changes a production system | Include a backup, a rehearsal outside production, a canary, a rollback, a communication step, and the point of no return. |
+| A dependency is outside the team's control | Start it first and name a fallback. |
+| Information is missing | Plan with stated assumptions and list the questions that would change the plan. Do not wait for all the answers. |
+| One level of the plan has more than about seven steps | Group them into phases. |
+| The plan covers a day or a week of one person's time | Size it to the real hours. Leave slack for meetings and interruptions. |
+| Success depends on one person or one system | Name it as a single point of failure. |
+| A step cannot be undone (a cutover, a deletion, a decommission) | Mark it. Put a go or no-go check before it. Keep the old system until the new one is verified. |
+| Two orders are possible | Choose the order that produces something testable sooner. |
+| The request names a time limit (a downtime budget, a window) | Build the plan to the limit, and say which steps consume it. |
+| A step's duration is unknown | Rehearse it and measure it before promising a time. |
+
+### Common mistakes and how to catch them
+
+| Mistake | How to catch it |
+|---|---|
+| No definition of done | Write the acceptance check before the first task. |
+| Estimates as single numbers | Use ranges. Add up the high ends to see the worst case. |
+| Hidden dependencies: access, approvals, DNS TTLs, data transfer time, reviews | For each task ask what must be true before it can start. |
+| No rollback | Write the undo next to every step that changes something. |
+| Only the case where everything works is planned | List the three most likely failures, with the sign of each and the response. |
+| Too much detail far ahead, too little for next week | Detail the next two weeks. Outline the rest. |
+| Meetings, holidays, and on-call time ignored | Count working days and the hours really available. |
+| Tasks with no owner | Name one, or write "owner needed". |
+| A plan that hides the fact that it does not fit | Put the gap in the first sentence. |
+| The point of no return is not marked | Find the step after which the old state cannot be restored, and label it. |
+
+### Checks before answering
+
+- The goal can be tested.
+- The tasks are in dependency order.
+- The estimates add up, and any gap against the deadline is stated.
+- A live change has a backup, a rollback, and a marked point of no return.
+- The risks have triggers and responses.
+- The open questions are listed, with what each one changes.
+- The first step is clear.
+
+### Stating confidence
+
+- Estimates: give ranges. "3 to 5 hours one at a time."
+- Assumption-driven: "This plan assumes the database is under 1 TB. A larger one adds copy
+  time, not a different design."
+- Weak spot: "Phase 3 is the least certain estimate. The rehearsal will replace it with a
+  measurement."
+- Not verified: "I have not seen your systems. The first step produces the facts the rest is
+  sized from."
+
+### Worked examples
+
+#### Planning example 1: a week that does not fit
+
+**Request**
+
+> I have 5 working days. Tasks: write the design doc (2 days), review 3 PRs (half a day), fix
+> the login bug (1 to 2 days), prepare the quarterly demo (1 day), onboard the new hire
+> (1 day). Plan my week.
+
+**Final answer**
+
+It does not fit. The tasks add up to 5.5 to 6.5 days and you have 5, before any meetings or
+interruptions. Something has to move, shrink, or go to someone else.
+
+| Task | Estimate in days |
+|---|---|
+| Design doc | 2 |
+| Review 3 PRs | 0.5 |
+| Fix the login bug | 1 to 2 |
+| Prepare the quarterly demo | 1 |
+| Onboard the new hire | 1 |
+| **Total** | **5.5 to 6.5** |
+
+Options:
+
+| Option | Frees | Risk |
+|---|---|---|
+| A. Move the second half of the design doc to next week | 1 day | Whoever is waiting for the doc waits longer. |
+| B. Hand the PR reviews to a teammate, and share the onboarding with a buddy | 1 day | Depends on two other people having time. |
+| C. Stop work on the bug after 1.5 days and escalate if it is not fixed | Up to 0.5 day | The bug may stay open. |
+
+Recommendation: A, with the limit from C. It needs nobody else's time, and it protects the
+bug fix, which has the least certain estimate. That brings the week to 4.5 to 5 days.
+
+| Day | Morning | Afternoon |
+|---|---|---|
+| Mon | Login bug | Login bug |
+| Tue | Login bug, or design doc if the bug is fixed | PR reviews |
+| Wed | Onboarding | Onboarding |
+| Thu | Design doc, first half | Design doc, first half |
+| Fri | Demo preparation | Demo preparation |
+
+This plan has no slack. Every hour of meetings comes out of the design doc on Thursday.
+
+Two things I assumed. Tell me if either is wrong:
+
+- The bug comes first because it affects users.
+- Onboarding is on Wednesday. Move it to the day the new hire starts.
+
+What would change the recommendation: if the design doc has a fixed date this week, choose B.
+
+#### Planning example 2: a maintenance window
+
+**Request**
+
+> Plan a maintenance window to patch 12 RHEL 8 servers this Saturday.
+
+**Final answer**
+
+Assumptions, because the request does not say: the servers are production, each service runs
+on more than one of them so it can lose one member at a time, and reboots are acceptable in
+the window. If any server has no redundant peer, such as a standalone database, tell me. It
+needs its own slot and either a failover or a downtime notice.
+
+**Goal.** All 12 servers on the current packages and kernel, every service healthy, no
+unplanned outage.
+
+**Before Saturday**
+
+1. Inventory. List the 12 hosts with role, owner, and whether each has a redundant peer.
+   Split them into three batches so that no batch holds every member of one service.
+2. See what will change, on one host per role:
+
+   ```bash
+   sudo dnf check-update
+   sudo dnf updateinfo list --security
+   ```
+
+   Note the kernel, glibc, openssl, and database packages. They need a reboot or a service
+   restart.
+3. Patch a non-production host of each role first, if one exists, and run the application
+   checks on it.
+4. Confirm that each host has a snapshot or a tested backup scheduled just before the window.
+   Write down the restore step.
+5. Write the health checks per role: the service is active, the port answers, the health URL
+   returns 200, the host is back in the load balancer.
+6. Announce the window: time, hosts, expected impact, contact.
+7. Agree the stop rule in advance: if a host fails its checks and is not fixed in 30 minutes,
+   roll that host back and patch nothing else.
+
+**Saturday**
+
+| Step | What | Check before moving on |
+|---|---|---|
+| 1 | Snapshot all 12 hosts | Every snapshot exists |
+| 2 | Batch 1: one canary host. Remove it from the load balancer, patch, reboot. | Health checks pass. Watch it for 15 minutes. |
+| 3 | Batch 2: 5 hosts, never two of the same service at once | Each host is healthy before the next of its service starts |
+| 4 | Batch 3: the remaining 6, same rule | Same |
+| 5 | Final check on all 12 | New kernel running, no failed units, services healthy |
+
+Per host:
+
+```bash
+sudo dnf update -y
+sudo dnf needs-restarting -r      # exit code 1 means a reboot is needed
+sudo systemctl reboot
+```
+
+After it is back:
+
+```bash
+uname -r                          # the new kernel
+systemctl --failed                # expect no units listed
+sudo dnf history info last        # what was changed
+```
+
+`dnf needs-restarting` comes from the `dnf-utils` package.
+
+**Rollback**
+
+- A package problem: `sudo dnf history undo last` on that host.
+- A kernel problem: boot the previous kernel from the GRUB menu, then make it the default
+  with `sudo grubby --set-default /boot/vmlinuz-<previous-version>`.
+- Anything else: restore the snapshot from step 1.
+
+**Time.** Each host takes 15 to 25 minutes to patch, reboot, and check. One at a time, that is
+3 to 5 hours. With two or three hosts of different services in parallel after the canary, it
+is 1.5 to 2.5 hours. Add 30 minutes for snapshots and 30 minutes of slack. Book 4 hours.
+
+**Risks**
+
+| Risk | Sign | Response |
+|---|---|---|
+| A service does not start after the reboot | `systemctl --failed` lists it | Fix it or roll that host back. Stop the batch. |
+| A host does not come back | No SSH after 10 minutes | Use the console. Boot the previous kernel, or restore the snapshot. |
+| A third-party kernel module or agent fails on the new kernel | The module does not load | Boot the previous kernel. Hold the kernel back until the vendor updates the module. |
+| An update brings a version the application does not support | The application check fails | `dnf history undo last`, then pin the package. |
+
+**Open questions.** Each one changes the plan:
+
+1. Which hosts have no redundant peer?
+2. Is there a non-production copy to patch first?
+3. Security updates only (`dnf update --security`), or everything?
+4. Who confirms that each service is healthy?
+
+**First step today.** The inventory. The batches depend on it.
+
+Not verified: I have not seen the servers. The commands are for RHEL 8.
+
+#### Planning example 3: a migration with a downtime limit
+
+**Request**
+
+> Plan the migration of our PostgreSQL database from our data center to Azure. We can afford
+> about 30 minutes of downtime.
+
+**Final answer**
+
+A 30-minute limit rules out dump-and-restore for anything but a small database. This plan
+copies the data to Azure with continuous replication and then makes a short cutover. Three
+facts I do not have would change it. The plan states what it assumes for each, and they come
+back as open questions at the end.
+
+**Assumptions**
+
+- The target is Azure Database for PostgreSQL flexible server, the managed service. For
+  PostgreSQL on a VM, phases 2 and 3 change.
+- The database is under 1 TB. A larger one adds copy time, not a different design.
+- The source is PostgreSQL 10 or later, and you can set `wal_level = logical`. That setting
+  needs a restart of the source.
+
+**Done means.** The application runs against Azure. Row counts match on every table and
+checksums match on the agreed tables. Write downtime was 30 minutes or less. The old database
+is intact and can be switched back to.
+
+**Phases**
+
+| Phase | What | Exit check | Working days |
+|---|---|---|---|
+| 1. Assess | Size, version, extensions, large objects, tables without a primary key, peak write rate, network path to Azure | A written list of blockers, each with an owner | 2 to 4 |
+| 2. Build | Create the target server: same major version, extensions enabled, sized from phase 1. Private network path. Roles and schema loaded. | The application's tests pass against the empty schema | 3 to 5 |
+| 3. Rehearse | A full migration into a throwaway target. Measure the copy time and the replication lag. Practice the cutover and the rollback with a test copy of the application. | The rehearsed cutover took 15 minutes or less, and the rollback worked | 5 to 10 |
+| 4. Replicate | Start the real replication ahead of the cutover. Freeze schema changes. Watch the lag. | Lag stays at a few seconds or less through two days of peak load | 3 to 7 |
+| 5. Cut over | The runbook below | Its checks pass inside the window | 1 |
+| 6. Stabilize | Watch errors, latency, and slow queries. Keep the old database as the fallback. | An agreed number of clean days. Decommissioning is a separate, approved step. | 5 to 10 |
+
+Total: 19 to 37 working days, about 4 to 7.5 weeks. Phase 3 is the least certain estimate. The
+rehearsal replaces it with a measurement.
+
+**Cutover runbook, 30 minutes**
+
+| Minute | Step | Go or no-go |
+|---|---|---|
+| 0 | Announce the start. Put the application into maintenance mode so writes stop. | |
+| 0 to 5 | Confirm nothing is writing to the source. Wait for the replication lag to reach zero. | Lag is zero |
+| 5 to 10 | Copy what replication does not carry: the sequence values. Run the data checks. | Every check matches. If not, reopen the application on the old database. |
+| 10 to 15 | Point the application at Azure and restart it. | |
+| 15 to 25 | Smoke tests: log in, read, write, one of each critical flow. | All pass. If not by minute 25, switch back to the old database. |
+| 25 to 30 | Reopen to users. Announce. | |
+
+**The point of no return** is the first write accepted on Azure after reopening. Before it,
+rollback means pointing the application back at the old database, which has not changed.
+After it, going back means carrying the new writes back too. Decide before the window whether
+to set up reverse replication or to accept a defined amount of data loss on a late rollback.
+
+**What logical replication does not copy.** Each item needs its own step: sequence values,
+schema changes made after the initial load, and large objects. A table needs a primary key or
+a replica identity for its updates and deletes to replicate.
+
+**Risks**
+
+| Risk | Sign | Response |
+|---|---|---|
+| The initial copy is slower than planned | The rehearsal copy runs over its estimate | More bandwidth, or start phase 4 earlier |
+| The lag does not reach zero | Lag grows at peak | Cut over at the quietest hour. Find the long transaction. Resize the target. |
+| An extension or feature is missing on the managed service | Found in phase 1 | Replace it, or move to PostgreSQL on a VM |
+| Queries are slower on Azure | Slow queries in the phase 3 tests | Tune and resize before the cutover, not after |
+| A rollback is needed after reopening | Errors after minute 30 | The decision made in advance: reverse replication, or a defined data loss |
+
+**Open questions**
+
+1. How large is the database, and what is the peak write rate? That sets the copy time and
+   whether the lag can reach zero.
+2. Which PostgreSQL version, and which extensions?
+3. Is the 30 minutes a total, or 30 minutes without writes while reads continue?
+4. Can the application be put into a maintenance or read-only mode?
+5. Who makes the go or no-go call during the window?
+
+**First step.** Run the assessment this week: size, version, extensions, tables without
+primary keys. Everything else is sized from it.
+
+Not verified: I have not seen your database. Check the supported versions and the extension
+list for the target service in the current Azure documentation. Both change.
