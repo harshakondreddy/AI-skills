@@ -17,6 +17,7 @@ Sections:
 - [Debugging](#debugging)
 - [Infrastructure and DevOps](#infrastructure-and-devops)
 - [Writing](#writing)
+- [Research](#research)
 
 ---
 
@@ -1622,3 +1623,284 @@ If that changes, I will get in touch.
 ```
 
 30 words. Fill in the two names.
+
+---
+
+## Research
+
+Use for finding facts, comparing options, checking a claim, summarizing sources, and "what is
+the current ..." questions.
+
+### Questions to ask first
+
+- What decision or output will this feed?
+- How current must it be? Is there a cutoff date?
+- Which sources count: official documentation, peer-reviewed work, vendor material?
+- How deep: a short answer with a source, or a full comparison?
+- Which version, region, or context applies?
+
+### Assumptions
+
+State:
+
+- Whether you consulted live sources in this session or are answering from memory, and the
+  date your information runs to.
+- The version, region, or scope the answer applies to.
+
+Check, do not assume:
+
+- The claim in a primary source: the official documentation, the standard, the paper, the
+  release notes, the data set.
+- The date of each source.
+- That the source is about the same version, region, and conditions as the question.
+
+Never assume:
+
+- A widely repeated number is correct.
+- A source exists because the claim sounds familiar.
+- A figure measured under one set of conditions holds under another.
+
+### Steps
+
+1. Restate the question as something that can be checked. Split it into sub-questions.
+2. For each one, find the primary source. Use secondary sources to locate primary ones, not to
+   replace them.
+3. Record for each claim: the source, its date, and the exact figure or wording.
+4. Cross-check each important claim against a second, independent source. Note where they
+   disagree.
+5. Test what you can yourself: run the command, read the code, recompute the number.
+6. Separate what the sources say from what you infer.
+7. Check recency. Versions, prices, limits, and laws change. Note the date you checked.
+8. Answer the question first. Then the support. Then what is uncertain or disputed.
+9. Give the sources in a form the reader can follow: title, publisher, date, and a link if
+   you have one.
+
+### Decision rules
+
+| If | Then |
+|---|---|
+| You have no access to current sources | Say so first. Give what you know with its date. Say where to confirm it, with the exact page or command. |
+| Two sources disagree | Report both. Say which is more direct, more recent, or more independent. Do not average them. |
+| A number matters | Give it with its unit, date, and source. Keep the source's precision. |
+| You cannot find a source for a claim | Drop the claim or label it "unsourced". |
+| You are asked for a citation and are not certain it exists | Do not produce one. Say what you recall, label it as unverified, and say how to check it. |
+| The question asks what is "recommended" or "standard" | Name who recommends it. |
+| The source is a vendor describing its own product | Treat performance and comparison figures as claims, and say so. |
+| The topic moves fast (software versions, prices, regulations) | Point to the official page and tell the person to confirm there. |
+| The evidence is thin | Say "the evidence is limited to ...". Do not round it up to a conclusion. |
+| The question rests on a common belief | Check the belief before answering inside it. |
+| The claim can be tested in a minute | Test it, and report the result along with the source. |
+| Part of the question is a matter of judgment or prediction | Say which part is fact and which is judgment. |
+
+### Common mistakes and how to catch them
+
+| Mistake | How to catch it |
+|---|---|
+| A citation that was made up, or attributed to the wrong work | Cite only what you read in this session or are certain exists. Mark everything else. |
+| An outdated fact stated as current | Put a date on every time-sensitive claim. |
+| One source treated as settled | Find a second, independent source for each important claim. |
+| A summary that says more than the source | Re-read the source passage next to your sentence. |
+| Versions or regions mixed together | Write the version or region next to each claim. |
+| Searching only for support | Search for the opposite claim too. |
+| A correlation reported as a cause | Check what kind of study it was and what it measured. |
+| Precision the source does not have | Keep the source's rounding. |
+| A finding about one thing applied to another | Compare what was measured with what is being claimed. |
+
+### Checks before answering
+
+- The direct answer comes first.
+- Each claim has a source, or is labeled as inference or as unverified.
+- Time-sensitive claims carry a date.
+- Disagreements between sources are reported, not hidden.
+- The answer says what was not checked.
+- The reader has what they need to confirm it: the page, the command, the reference.
+
+### Stating confidence
+
+- Confirmed: "Confirmed in the built-in help for `list.sort`, and by running it."
+- From memory: "From memory, as of my information. Confirm on the releases page."
+- No access: "I cannot check current sources from here, so I am not giving a version number as
+  current."
+- Disagreement: "The sources disagree. A reports 40% in its own test. B measured 8% to 12%
+  under conditions closer to yours."
+- Unverified recollection: "I recall this from a book and have not checked the page. Verify
+  it before you cite it."
+
+### Worked examples
+
+#### Research example 1: a fact with a source and a test
+
+**Request**
+
+> Does Python's sort keep equal elements in their original order?
+
+**Final answer**
+
+Yes. Python's sort is stable: elements that compare equal keep their original order. This
+holds for `list.sort()` and for `sorted()`, with or without `key=`.
+
+Sources:
+
+- The built-in help for `list.sort` (`python3 -c "help(list.sort)"`) says the sort is
+  "stable (i.e. the order of two equal elements is maintained)".
+- The Sorting HOW TO in the Python documentation says sorts are guaranteed to be stable.
+
+Verified by running it on Python 3.9:
+
+```python
+records = [("bob", 2), ("alice", 1), ("carol", 2), ("dave", 1)]
+print(sorted(records, key=lambda r: r[1]))
+# [('alice', 1), ('dave', 1), ('bob', 2), ('carol', 2)]
+```
+
+`alice` stays ahead of `dave`, and `bob` ahead of `carol`, as in the input.
+
+One case that surprises people: `reverse=True` also keeps equal elements in their original
+order. It does not flip them.
+
+```python
+print(sorted(records, key=lambda r: r[1], reverse=True))
+# [('bob', 2), ('carol', 2), ('alice', 1), ('dave', 1)]
+```
+
+#### Research example 2: a fast-moving fact and no live access
+
+**Request**
+
+> What is the latest Kubernetes version?
+
+**Final answer**
+
+I cannot check current sources from here, so I am not giving a version number as current.
+Kubernetes ships a new minor release about three times a year, so a number from memory is
+likely to be out of date.
+
+To get the answer now:
+
+```bash
+curl -L -s https://dl.k8s.io/release/stable.txt     # prints the latest stable release
+```
+
+Or read the release page, https://kubernetes.io/releases/. It lists the supported minor
+releases and their end-of-life dates.
+
+Two questions that often sit behind this one:
+
+- **What does my cluster run?** `kubectl version` shows the client and server versions.
+- **What can I upgrade to?** The project maintains the three most recent minor releases, and a
+  cluster is upgraded one minor version at a time. The target is normally the next minor
+  release above your server version, not the latest one.
+
+Tell me your current version and I will lay out the upgrade path.
+
+#### Research example 3: two sources that disagree
+
+**Request**
+
+> Should I tell my team the new storage driver makes things 40% faster? The vendor's blog says
+> 40% higher throughput. An independent benchmark I found measured 8 to 12%. The vendor tested
+> sequential writes with 1 MB blocks on NVMe. The independent test ran a mixed read/write
+> database workload on the same class of hardware.
+
+**Final answer**
+
+No. Do not tell them 40%. The two numbers measure different things, so report both with what
+each one measured.
+
+| Source | Result | Workload | Who ran it |
+|---|---|---|---|
+| Vendor blog | 40% higher throughput | Sequential writes, 1 MB blocks, NVMe | The vendor, on its own product |
+| Independent benchmark | 8% to 12% | Mixed read/write database workload, same class of hardware | A third party |
+
+Both can be true. A likely reason for the gap: large sequential writes are a workload where a
+driver change shows up strongly, while a database workload is also limited by random I/O,
+locking, and CPU. That explanation is my inference, not something either source states.
+
+Treat the vendor's figure as the upper end for one workload, reported by the party selling
+the product.
+
+Wording you can defend:
+
+```text
+The vendor reports 40% higher throughput on large sequential writes. An independent test on a
+database workload measured 8% to 12%. Our workload is closer to [which one], so we should
+expect [that range] until we measure it ourselves.
+```
+
+What would settle it: run your own workload on the old and the new driver on one test node
+and compare. That is the only number that applies to you.
+
+Not verified: I have not seen either source. I am taking the test details as you described
+them.
+
+#### Research example 4: a question built on a common belief
+
+**Request**
+
+> How long does DNS propagation take? I heard 48 hours. We're moving our site to a new IP on
+> Friday.
+
+**Final answer**
+
+There is no fixed propagation time, and 48 hours is not a rule for this change. Each resolver
+keeps your old record until its TTL (time to live) runs out, then asks again. The wait is at
+most the TTL of the record you are changing, and you control that.
+
+For Friday:
+
+1. Check the current TTL. The second column is the TTL in seconds:
+
+   ```bash
+   dig +noall +answer www.example.com A @<your-nameserver>
+   ```
+
+2. At least one full TTL before Friday, lower the TTL to 300 seconds. If it is 86400 (24
+   hours) now, do this by Thursday morning at the latest.
+3. On Friday, change the IP. Resolvers pick up the new address within about 5 minutes.
+4. Keep the old server running for a day. Some resolvers and applications hold a record
+   longer than its TTL says.
+5. When it is stable, raise the TTL again.
+
+Where the 48 hours comes from: changing a domain's **nameservers** at the registrar. The
+delegation records held by the `.com` registry carry a TTL of 172800 seconds, which is 48
+hours, and you cannot lower it. That does not apply to changing an A record at the same DNS
+provider.
+
+Verified: `dig +norec @a.gtld-servers.net example.com NS` shows the 172800-second TTL on a
+`.com` delegation.
+
+Not verified: your record's current TTL. Step 1 shows it. If you are also switching DNS
+providers on Friday, tell me. Then the 48 hours does apply, and the plan changes.
+
+#### Research example 5: a request for a citation
+
+**Request**
+
+> I need a citation for "code review catches 60% of defects" for a slide.
+
+**Final answer**
+
+I cannot give you a citation I have checked, and I will not write one that only looks right.
+Here is what I recall, labeled as unverified:
+
+- Steve McConnell's *Code Complete* (2nd edition), in the chapter on software quality, has a
+  table of defect-detection rates. As I recall it, **formal code inspections** find 45% to 70%
+  of defects, with 60% as the typical figure, and **informal code reviews** find 20% to 35%.
+  The table is adapted from data by Capers Jones and others.
+
+Two cautions before this goes on a slide:
+
+1. **I have not checked the page.** This is from memory. Open the book and confirm the table
+   and the numbers.
+2. **The claim and the source do not match.** If my recollection is right, 60% is for formal
+   inspections: a structured process with prepared reviewers and defined roles. Everyday
+   pull-request review is closer to the informal row, which is much lower. "Code review
+   catches 60% of defects" would overstate it.
+
+Wording the source would support, once you have verified it:
+
+```text
+Formal code inspections typically find around 60% of defects (McConnell, Code Complete, 2nd ed.).
+```
+
+If you cannot get the book, drop the number and make the point without a figure.
