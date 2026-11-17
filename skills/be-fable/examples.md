@@ -18,6 +18,7 @@ Sections:
 - [Infrastructure and DevOps](#infrastructure-and-devops)
 - [Writing](#writing)
 - [Research](#research)
+- [Math](#math)
 
 ---
 
@@ -1904,3 +1905,318 @@ Formal code inspections typically find around 60% of defects (McConnell, Code Co
 ```
 
 If you cannot get the book, drop the number and make the point without a figure.
+
+---
+
+## Math
+
+Use for calculations, word problems, estimates, statistics, unit conversions, and proofs.
+
+### Questions to ask first
+
+- What exactly is wanted: a value, a range, an estimate, a proof? In which units, and to what
+  precision?
+- Are the given numbers exact or rounded?
+- Which convention applies: the compounding period, inclusive or exclusive bounds, with or
+  without replacement, decimal or binary units?
+- Is an exact answer needed, or is an estimate enough?
+
+### Assumptions
+
+State:
+
+- The reading you chose when the wording allows two.
+- The units, the rounding, and the convention used (for example a 30-day month, or
+  1 TB = 10^12 bytes).
+- Independence, a distribution, or any other condition the method needs.
+
+Check, do not assume:
+
+- The units agree on both sides.
+- The conditions of a formula or theorem hold before you use it.
+- The given data is consistent with itself.
+
+### Steps
+
+1. Restate the problem: the knowns, the unknown, the units.
+2. Choose the method, and check that its conditions hold.
+3. Compute step by step. Carry the units. Keep full precision until the end.
+4. Use a calculator or code for arithmetic beyond a few digits.
+5. Check the result a second way: the inverse operation, substituting back, a different
+   method, a small case counted by hand, an order-of-magnitude estimate, or a simulation.
+6. Check that the result is reasonable: its sign, its size, its behavior at the extremes.
+7. Re-read the question. Confirm the result answers what was asked.
+8. Give the answer with units and precision, then the key steps, then the assumptions.
+
+### Decision rules
+
+| If | Then |
+|---|---|
+| The wording has two readings | State the reading you used. If both are cheap to compute, give both. |
+| The problem involves probability | Define the sample space, and say whether the events are independent, before computing. |
+| The arithmetic has many steps or more than about four significant digits | Compute it with a tool and report the tool's result. |
+| The result is surprising | Verify it by a second method before presenting it. |
+| It is an estimate | Give a range, and name the assumption that moves it the most. |
+| A proof is asked for | State what is given and what is to be shown. Justify each step. Test the claim on an example. |
+| Rounding is needed | Round once, at the end, and say to how many places. |
+| The problem looks like a known trap (percent of percent, average of rates, base rates, adding percentiles) | Compute from the definitions with concrete numbers. Do not answer from the pattern. |
+| Units are mixed | Convert first and show the conversion. |
+| The answer cannot be computed from what was given | Say so, say what is missing, and give what can be said: a bound or a range. |
+| The given data contradicts itself | Point it out. Do not force an answer. |
+| Items come in whole units (pods, people, servers, boxes) | Divide per container, not in total, and round in the direction the situation requires. |
+
+### Common mistakes and how to catch them
+
+| Mistake | How to catch it |
+|---|---|
+| Averaging rates or percentages directly | Compute from totals: total distance over total time, total hits over total tries. |
+| Percent of what? Percent mixed up with percentage points | Name the base of every percentage. |
+| Off-by-one in counting (fence posts, inclusive ranges) | Count a small case by hand. |
+| Unit slips: MB and MiB, bits and bytes, monthly and annual, ms and s | Write the unit on every line. |
+| Assuming independence | State it. Ask what would make the events move together. |
+| Arithmetic slips | Recompute with a tool, or apply the inverse operation. |
+| Rounding too early | Keep full precision until the last step. |
+| Answering a different question, such as P(A given B) for P(B given A) | Re-read the question after solving. |
+| Correct arithmetic on the wrong model | Compare the result with something known. |
+| Adding or averaging percentiles | Compute the percentile of the per-item totals, not from the parts' percentiles. |
+
+### Checks before answering
+
+- The answer has units and a stated precision.
+- A second method or a substitution confirmed it.
+- The assumptions and conventions are stated.
+- The result answers the question that was asked.
+- Whole-unit quantities were rounded in the right direction.
+
+### Stating confidence
+
+- Exact: "Exactly 40 mph."
+- Checked: "Checked by substituting back", or "Checked with one million simulated cases."
+- Estimate: "Between 5 and 6.5 hours. The share of the link you get is what moves it."
+- Conditional: "About 9%, if '99% accurate' means the false-positive rate and the
+  false-negative rate are both 1%."
+- Not computable: "This cannot be computed from the two numbers given. What can be said
+  is ..."
+
+### Worked examples
+
+#### Math example 1: a percentage of a percentage
+
+**Request**
+
+> A price went up 20% and then down 20%. Is it back where it started?
+
+**Final answer**
+
+No. It ends 4% below where it started.
+
+Start at 100. Up 20% gives 120. Down 20% of 120 is 24, which gives 96.
+
+The two percentages have different bases. The rise is 20% of 100. The fall is 20% of 120. The
+order does not matter: down 20% and then up 20% also gives 96.
+
+To get from 120 back to 100, the drop has to be 16.67% (20 out of 120).
+
+Checked: 100 x 1.2 x 0.8 = 96.
+
+#### Math example 2: an average of rates
+
+**Request**
+
+> I drive to work at 30 mph and back at 60 mph. What's my average speed?
+
+**Final answer**
+
+40 mph, not 45.
+
+Average speed is total distance divided by total time. The slower leg takes twice as long, so
+it counts for more.
+
+Take 60 miles each way. Out takes 2 hours. Back takes 1 hour. That is 120 miles in 3 hours:
+40 mph.
+
+The distance does not change the answer. Checked with one-way distances of 1, 15, 60, and 240
+miles: 40 mph each time.
+
+Assuming the same route in both directions. If the two legs took equal time, not equal
+distance, the answer would be 45 mph.
+
+#### Math example 3: whole units and capacity
+
+**Request**
+
+> We have 3 nodes with 16 GiB of memory each. Each pod requests 1.5 GiB. How many pods fit?
+
+**Final answer**
+
+At most 30, and fewer in practice: about 27, or 18 if the pods must survive the loss of a
+node.
+
+- **Not 32.** 48 GiB divided by 1.5 GiB is 32, but that treats the cluster as one pool. A pod
+  cannot be split across nodes, so divide per node and round down.
+- **Upper bound: 30.** 16 divided by 1.5 is 10.67, so 10 pods per node, times 3 nodes.
+- **Realistic: about 27.** Pods are scheduled against a node's allocatable memory, which is
+  its capacity minus what is reserved for the system and the kubelet. If allocatable is
+  14.5 GiB, that is 9 pods per node (9 x 1.5 = 13.5 fits, 10 x 1.5 = 15 does not), so 27.
+  Pods already on the nodes, such as DaemonSets, lower it further.
+- **With one node down: 18.** Two nodes times 9. If these pods must keep running through a
+  node failure or a drain, plan for 18.
+
+Get the real numbers from your cluster:
+
+```bash
+kubectl describe node <node> | grep -A 7 "Allocatable:"
+kubectl describe node <node> | grep -A 8 "Allocated resources:"
+```
+
+Per node, pods = (allocatable memory - memory already requested) / 1.5 GiB, rounded down. Add
+up the nodes.
+
+Assumptions: memory is the only limit. CPU requests and the per-node pod limit (110 by
+default) can cap it sooner. The 14.5 GiB is an example, not your value.
+
+#### Math example 4: a base rate
+
+**Request**
+
+> A test for a disease is 99% accurate. 1 person in 1,000 has the disease. I tested positive.
+> What is the chance I have it?
+
+**Final answer**
+
+About 9%, not 99%.
+
+Assuming "99% accurate" means both of these: 99% of people with the disease test positive, and
+99% of people without it test negative.
+
+Take 100,000 people:
+
+- 100 have the disease. 99 of them test positive.
+- 99,900 do not. 1% of them, 999 people, test positive anyway.
+
+So 1,098 people test positive and 99 of them have the disease: 99 / 1,098 = 9.0%.
+
+The result is low because the disease is rare. The healthy group is so large that its 1% of
+false positives outnumbers the true positives ten to one.
+
+Checked with Bayes' rule: (0.001 x 0.99) / (0.001 x 0.99 + 0.999 x 0.01) = 11/122 = 0.0902.
+
+What changes the answer:
+
+- The 1 in 1,000 is the rate for the whole population. If you were tested because of symptoms
+  or a known exposure, your starting chance is higher, and so is the result. At 1 in 10 it
+  would be 92%.
+- A second, independent positive test raises it sharply.
+
+This is the arithmetic only. What it means for you is a question for the doctor who ordered
+the test.
+
+#### Math example 5: a conversion with a convention
+
+**Request**
+
+> How much downtime does 99.9% uptime allow per month?
+
+**Final answer**
+
+43.2 minutes in a 30-day month.
+
+A 30-day month has 30 x 24 x 60 = 43,200 minutes. 0.1% of that is 43.2 minutes.
+
+| Period | Downtime allowed at 99.9% |
+|---|---|
+| 30-day month | 43.2 minutes |
+| 31-day month | 44.64 minutes |
+| 365-day year | 8.76 hours (8 h 45 m 36 s) |
+
+For comparison, 99.95% allows 21.6 minutes in a 30-day month, and 99.99% allows 4.32 minutes.
+
+Before relying on the figure, check how your agreement measures it: the period (calendar
+month, 30 days, or rolling), whether planned maintenance counts, and what counts as "down".
+Those change the number more than the arithmetic does.
+
+#### Math example 6: an estimate
+
+**Request**
+
+> How long will it take to copy 2 TB over our 1 Gbps link?
+
+**Final answer**
+
+About 4.5 hours at the theoretical maximum. Plan for 5 to 6.5 hours.
+
+- 2 TB = 2 x 10^12 bytes = 1.6 x 10^13 bits.
+- 1 Gbps = 10^9 bits per second.
+- 1.6 x 10^13 / 10^9 = 16,000 seconds = 4 h 26 m 40 s.
+
+A link rarely carries its nominal rate end to end. Protocol overhead, other traffic, and disk
+speed each take a share:
+
+| Share of the link you get | Time |
+|---|---|
+| 100% | 4 h 27 m |
+| 90% | 4 h 56 m |
+| 80% | 5 h 33 m |
+| 70% | 6 h 21 m |
+
+Assumptions that move the result:
+
+- **Units.** If the tool reports 2 TiB (binary units), that is about 10% more data: 4 h 53 m
+  at the full rate.
+- **The slowest part sets the pace.** 1 Gbps is 125 MB per second. A disk that reads or
+  writes more slowly than that is the limit, not the link. Many small files copy more slowly
+  than a few large ones.
+- **Sharing.** If the link also carries production traffic, either the copy slows down or the
+  traffic does. Consider a rate limit, such as `rsync --bwlimit`.
+
+To replace the estimate with a measurement, copy a 10 GB sample, time it, and scale up.
+
+#### Math example 7: a proof
+
+**Request**
+
+> Prove that the sum of two odd numbers is even.
+
+**Final answer**
+
+**Given:** two odd integers a and b. **To show:** a + b is even.
+
+An integer is odd when it can be written as 2k + 1 for some integer k. It is even when it can
+be written as 2k.
+
+1. a is odd, so a = 2m + 1 for some integer m.
+2. b is odd, so b = 2n + 1 for some integer n.
+3. a + b = (2m + 1) + (2n + 1) = 2m + 2n + 2 = 2(m + n + 1).
+4. m + n + 1 is an integer, so a + b is 2 times an integer. That is the definition of even.
+
+Checked on examples: 3 + 5 = 8, -7 + 1 = -6, 1 + 1 = 2. The last one shows that a and b may
+be the same number, which is why the proof uses separate letters m and n.
+
+#### Math example 8: a question that cannot be answered from the data given
+
+**Request**
+
+> Service A has a p95 latency of 200 ms and service B has 300 ms. A request calls A and then
+> B. Is the p95 of the whole request 500 ms?
+
+**Final answer**
+
+Not necessarily. Percentiles do not add, and the p95 of the total cannot be computed from
+those two numbers. It depends on whether the same requests are slow in both services.
+
+| If | Then the p95 of the total is |
+|---|---|
+| The same requests are slow in both services | 500 ms |
+| Slowness in A and in B is independent | Below 500 ms. About 400 ms in a simulation with exponential latencies. |
+| Different requests are slow in each service | Possibly far above 500 ms. 1,200 ms in a constructed case. |
+
+What the two numbers do guarantee: at least 90% of requests finish within 500 ms. A request
+can take longer than 500 ms only if A took more than 200 ms or B took more than 300 ms, and
+each of those happens to at most 5% of requests.
+
+To get the real figure, measure the total time per request, from the caller or from traces,
+and take the 95th percentile of that.
+
+Checked by simulation with one million requests per case. The three results in the table are
+from those runs. In the constructed case, A is slow on 4.9% of requests and B is slow on a
+different 4.9%.
