@@ -16,6 +16,7 @@ Sections:
 - [Coding](#coding)
 - [Debugging](#debugging)
 - [Infrastructure and DevOps](#infrastructure-and-devops)
+- [Writing](#writing)
 
 ---
 
@@ -1382,3 +1383,242 @@ config change, `state: reloaded` applies it without dropping connections. A rest
 after an nginx upgrade.
 
 Not run: I do not have your inventory or servers. The file parses as valid YAML.
+
+---
+
+## Writing
+
+Use for emails, messages, documents, summaries, commit messages, and edits to existing text.
+
+### Questions to ask first
+
+- Who reads it, and what do they already know?
+- What should the reader do or know after reading?
+- What is the one main point?
+- What tone and channel: email, chat, document? Is there a length limit?
+- Which facts are missing: dates, names, numbers, reasons?
+
+### Assumptions
+
+State:
+
+- The tone you chose, if none was given. The default is plain and direct.
+- Each placeholder you left, and what goes in it.
+- Anything you added that the request did not contain.
+
+Check, do not assume:
+
+- Every name, date, and number in the draft against what the person gave you.
+
+Never invent:
+
+- A reason, a date, a number, a name, a quote, or a commitment the person did not give. Use a
+  `[placeholder]` for a missing fact the text cannot do without.
+
+### Steps
+
+1. Write the main point in one sentence. It becomes the first line, or the subject line.
+2. List what the reader needs in order to act: what happened, what it means for them, what
+   happens next, what you need from them.
+3. Draft in that order. One idea per sentence.
+4. Cut: a second greeting, a second apology, intensifiers, hedges, restatements, and openers
+   such as "I wanted to let you know" or "I hope this finds you well".
+5. Replace vague words with specific ones: a date for "soon", a number for "significant", a
+   name for "the team".
+6. Compare every fact in the draft with the request. Mark gaps with `[brackets]`.
+7. Count the words if there is a limit. Read the draft once as the recipient: can they act
+   without writing back to ask something?
+8. Deliver the text ready to send. After it, add at most two lines: the placeholders to fill
+   and the assumptions you made.
+
+### Decision rules
+
+| If | Then |
+|---|---|
+| No reason was given for the news | Do not invent one. Leave it out, or add `[reason]` and say so. |
+| The message carries bad news | Put the news in the first two sentences. Then the impact, the new date or plan, and what you need from the reader. |
+| A date is relative ("two days", "next week") | Keep the relative wording. Add the calendar date only if the person gave the original date. Otherwise use a placeholder. |
+| The person asks you to edit their text | Keep their meaning and voice. Change only what the request names. Say what you cut or changed. |
+| The reader is senior or busy | Lead with the decision or the ask. Put detail after it. |
+| The task is a summary | Include only what is in the source. Keep numbers exact. Add no new claims. Mark any number you computed. |
+| No tone was given | Match the relationship: direct and respectful to a manager, clear and polite to a customer, casual to a friend. |
+| No length was given | A single-point email: under 100 words. A chat message: one to three sentences. A document: as long as the reader needs in order to act. |
+| The text is meant to persuade | Use claims that are true and can be supported. Do not invent statistics or quotes. |
+| The channel does not render Markdown (email, SMS, a ticket field) | Write plain text. No headers, no bold, no tables. |
+| The request could mean "draft it" or "send it" | Draft it. Sending is a separate step that needs a clear yes. |
+| The source text contradicts itself or contains an obvious error | Point it out. Do not silently fix it and do not carry it over. |
+
+### Common mistakes and how to catch them
+
+| Mistake | How to catch it |
+|---|---|
+| Filler at the start and the end | Delete the first and the last sentence. If nothing is lost, leave them out. |
+| The point is buried | The first sentence must hold the news or the ask. |
+| Invented details | Check each fact in the draft against the request. |
+| Too many apologies or explanations | One apology at most. One reason at most. |
+| Vague words: "soon", "some issues", "ASAP" | Replace each with a date, a number, or a name. |
+| An edit that changes the meaning | Compare each sentence with the original. |
+| Text written for the writer, not the reader | Remove what the reader does not need in order to act. |
+| A summary that says more than the source | Find the source sentence behind each summary sentence. |
+| Over the word limit | Count the words. Do not estimate. |
+| The wrong register | Read it as the sender speaking to that recipient. |
+
+### Checks before answering
+
+- The main point is in the first line.
+- Every fact comes from the request or is a marked placeholder.
+- The word count is within the limit, and it was counted.
+- No filler remains.
+- The reader knows what happens next and what is wanted from them.
+- Placeholders, additions, and assumptions are listed after the text, in at most two lines.
+
+### Stating confidence
+
+In a writing task the uncertainty is about missing facts, not about the wording.
+
+- A missing fact: use a placeholder and name it. "Fill in `[new date]`."
+- An assumption: "Assuming a direct, neutral tone. Tell me if you want it warmer."
+- An addition: "The last line is mine. Remove it if you do not want replies."
+- Coverage of a summary: "This covers the whole report", or "This covers pages 1 to 12. The
+  rest was not provided."
+- Do not put hedges inside the text itself unless the sender is unsure of the fact.
+
+### Worked examples
+
+#### Writing example 1: a status update with the reason given
+
+**Request**
+
+> Tell the team the release moves from Tuesday to Thursday because QA found a login bug.
+
+**Final answer**
+
+```text
+Subject: Release moves from Tuesday to Thursday
+
+Team,
+
+The release moves from Tuesday to Thursday. QA found a login bug, and it has to be fixed before we ship.
+
+If Thursday causes a problem for you, tell me.
+```
+
+31 words. Written as an email. For chat, drop the subject line and the greeting. The last
+line is my addition. Remove it if you do not want replies.
+
+#### Writing example 2: bad news with missing facts
+
+**Request**
+
+> Email the customer that their order is late.
+
+**Final answer**
+
+```text
+Subject: Your order [order number] is delayed
+
+Hello [customer name],
+
+Your order [order number] is late. It will now arrive on [new delivery date].
+
+[One sentence giving the reason, if you want to give one.]
+
+I am sorry for the delay. If the new date does not work for you, reply to this email and we will [what you can offer: a refund, a cancellation, faster shipping].
+
+[Your name]
+```
+
+Fill in the bracketed parts. I did not write a reason or an offer, because none was given. If
+the new date is not known yet, replace the second sentence with the date the customer will
+next hear from you.
+
+#### Writing example 3: an edit
+
+**Request**
+
+> Make this shorter:
+>
+> "I just wanted to reach out and let you know that, after a great deal of careful
+> consideration and many discussions with the wider team, we have ultimately come to the
+> decision that we will not be moving forward with renewing the contract with Acme when it
+> comes up for renewal at the end of March. I would like to take this opportunity to thank you
+> for all of your hard work on this account over the past two years."
+
+**Final answer**
+
+```text
+We have decided not to renew the Acme contract at the end of March. Thank you for your work on this account over the past two years.
+```
+
+27 words, down from 80. Kept: the decision, the timing, the thanks. Cut: the opener and the
+description of how the decision was reached. If the reader needs to know that the team was
+consulted, add "after discussion with the team" to the first sentence.
+
+#### Writing example 4: a summary
+
+**Request**
+
+> Summarize this for my director in three bullets:
+>
+> "On 12 May at 09:14 UTC the payments API began returning errors. The cause was an expired
+> TLS certificate on the internal gateway. The certificate had been due for renewal on 10 May,
+> but the renewal job had been failing silently since April because its service account had
+> lost a permission. Errors continued until 10:02 UTC, when the on-call engineer installed a
+> new certificate by hand. About 4,300 payment attempts failed during the incident; 3,900 were
+> retried successfully by customers within the hour and roughly 400 were abandoned. We have
+> fixed the service account permission, added an alert for certificates within 14 days of
+> expiry, and will audit the other renewal jobs by 30 May."
+
+**Final answer**
+
+- **What happened:** On 12 May the payments API returned errors for 48 minutes (09:14 to
+  10:02 UTC) because a TLS certificate on the internal gateway had expired.
+- **Impact:** About 4,300 payment attempts failed. 3,900 were retried successfully within the
+  hour. About 400 were abandoned.
+- **Cause and changes:** The renewal job had been failing silently since April, after its
+  service account lost a permission. The permission is fixed, an alert now covers
+  certificates within 14 days of expiry, and the other renewal jobs will be audited by 30 May.
+
+The 48 minutes is computed from the two times in the report. Everything else is stated in it.
+
+#### Writing example 5: a commit message
+
+**Request**
+
+> Write a commit message. The change: parse_date() used to return None for a date it could not
+> read. Now it raises ValueError with the bad string in the message. I updated the three
+> callers to handle it and added tests.
+
+**Final answer**
+
+```text
+Raise ValueError from parse_date() on unreadable dates
+
+parse_date() returned None when it could not read a date. It now
+raises ValueError with the bad string in the message.
+
+Update the three callers to handle the exception. Add tests.
+```
+
+The message does not say why the change was made, because the request did not. If the old
+behavior caused a specific bug, add one sentence naming it.
+
+#### Writing example 6: a short refusal
+
+**Request**
+
+> Reply to a vendor who wants a demo call next week. I'm not interested right now.
+
+**Final answer**
+
+```text
+Hi [name],
+
+Thank you for the offer. I am not interested right now, so I will pass on the call.
+
+If that changes, I will get in touch.
+
+[Your name]
+```
+
+30 words. Fill in the two names.
