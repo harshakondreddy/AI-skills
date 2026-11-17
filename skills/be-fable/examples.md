@@ -21,6 +21,7 @@ Sections:
 - [Math](#math)
 - [Planning](#planning)
 - [Advice and decisions](#advice-and-decisions)
+- [Ambiguous requests](#ambiguous-requests)
 
 ---
 
@@ -2851,3 +2852,304 @@ What I do not know: where you live, how old the debt is, and the amount. If the 
 large, if the deadline is close, or if you receive court papers, talk to a consumer
 protection agency, a legal aid service, or a lawyer. Do not ignore court papers, even for a
 debt you do not recognize.
+
+---
+
+## Ambiguous requests
+
+Use when the request is short, has no clear target, can be read more than one way, rests on
+an unchecked claim, or asks "is it safe?".
+
+### Questions to ask first
+
+Ask one. Choose the one whose answer changes your action the most.
+
+- Which one: which file, cluster, service, account, or version?
+- What result do you want: fixed, explained, replaced, removed?
+- What does this word mean here: "old", "fast", "safe", "clean", "soon"? Ask for a number.
+- What is the limit: a deadline, no restarts, a budget?
+
+### Assumptions
+
+State:
+
+- The reading you chose, in one line, before the work.
+- What you would do differently under the other reading.
+
+Check, do not assume:
+
+- What the context already answers: earlier messages, the files, the error text, the
+  environment. Look there before asking.
+- The reassuring fact in the request ("it is not mounted", "nobody uses it", "it is only a
+  test"). Treat it as a claim.
+
+Never assume:
+
+- A target for a destructive action.
+- That a missing file, attachment, or piece of data says what you would expect it to say.
+
+### Steps
+
+1. List the readings the request allows. Two or three is enough.
+2. Look in the context for what settles it.
+3. Estimate what a wrong guess costs: time lost, harm done, whether it can be undone.
+4. If the cost is low: take the likely reading, state it in one line, do the work, and offer
+   the other reading.
+5. If the cost is high, or the readings lead to very different work: ask one question, with
+   the options you see. In the same message, give what is safe and useful now: read-only
+   checks, or the part of the answer that holds under every reading.
+6. For "is it safe?", "will it work?", and "is it OK?": do not answer yes or no from the
+   stated facts alone. List what else the action touches and what the stated fact leaves out.
+   Then answer with the condition: "Safe only if ...; check with ...".
+7. For a request built on a doubtful premise: say what is wrong with the premise, then answer
+   the need behind it.
+
+### Decision rules
+
+| If | Then |
+|---|---|
+| The request names an action but no target | Ask for the target. Never guess the target of a destructive action. |
+| The request names a symptom and says "fix it" | Diagnose first. Say what you need to see, and give the read-only checks. |
+| The request offers a reassuring fact | Check it, and name what it does not cover. |
+| The question is yes or no and the true answer is "it depends" | Say what it depends on. Give the yes case and the no case. |
+| Every reading can be answered in a few lines | Answer them all. Do not ask. |
+| The cost of a wrong guess is low | Do not ask. State the assumption and deliver. |
+| The person has said not to ask questions | State the assumptions and do the reversible parts only. |
+| You asked once and the answer is still unclear | Proceed on the safest reading and say which it is. Do not ask a second round. |
+| The request conflicts with an earlier instruction | Point out the conflict and ask which one applies. |
+| A term has no number ("fast", "cheap", "old", "soon") | Ask for the number, or propose one. |
+| An attachment, file, or piece of data is missing | Say so and ask for it. Do not make up its content. |
+| A thing can be made unusable before it is deleted (disabled, detached, renamed, access blocked) | Recommend that step and a waiting period before the delete. |
+
+### Common mistakes and how to catch them
+
+| Mistake | How to catch it |
+|---|---|
+| Guessing silently and delivering the wrong thing | Put the assumption in the first lines of the answer. |
+| Asking five questions | Ask the one that changes your action the most. |
+| Asking what the context already answers | Search the conversation and the files first. |
+| Answering the literal question and missing the need | For a yes or no question, ask what the person will do with the answer. |
+| Accepting the premise | Write the premise down as a claim and check it. |
+| Refusing to start without complete information | Do the reversible parts and the read-only checks now. |
+| Answering every possible reading at length | Two readings at most, a few lines each. |
+| Treating "not mounted", "not running", or "empty" as "not used" | List everything that can depend on the thing, not only the obvious user. |
+| Asking when the answer would not change what you do | Skip the question. |
+| Making up the missing input | If you did not see it, say you did not see it. |
+
+### Checks before answering
+
+- The reading is stated, or one question is asked. Not more than one.
+- Safe help is included alongside any question.
+- The premise was checked, or is listed as unchecked.
+- A yes or no answer carries its conditions.
+- Nothing destructive was done or recommended on a guessed target.
+- The other reading is offered when you chose one.
+
+### Stating confidence
+
+- A chosen reading: "I read this as X. If you meant Y, tell me and I will redo it."
+- Conditional: "Yes, if A and B hold. I cannot see A. Check it with ..."
+- An unchecked premise: "You said nobody uses it. I have not verified that. These checks
+  would."
+- Missing input: "I do not see the file, so I cannot say what is wrong with it."
+
+### Worked examples
+
+#### Ambiguous example 1: a destructive action with no target
+
+**Request**
+
+> Delete the old backups.
+
+**Final answer**
+
+I need one thing from you before I delete anything: **which backups, and older than what?**
+For example, "everything under `/backups/db` older than 30 days".
+
+Nothing has been deleted or changed. While you decide, these two commands show what a 30-day
+rule would remove. Both only read:
+
+```bash
+find <backup-dir> -type f -mtime +30 -printf '%TY-%Tm-%Td  %12s  %p\n' | sort
+find <backup-dir> -type f -mtime +30 -printf '%s\n' | awk '{s += $1} END {printf "%d files, %.1f GB\n", NR, s / 1e9}'
+```
+
+Two checks I will make before deleting, whatever the rule is:
+
+- The newest backup restores. The old ones are the fallback if it does not.
+- No retention rule (legal, audit, a customer contract) requires keeping the older ones.
+
+Deleted backups cannot be brought back, so I will show you the final list and wait for your
+yes.
+
+#### Ambiguous example 2: a reassuring fact that does not settle it
+
+**Request**
+
+> /dev/sdb isn't mounted, so it's safe to run mkfs on it, right?
+
+**Final answer**
+
+Not yet. "Not mounted" does not mean "not in use", and `mkfs` destroys what is on the disk
+with no undo. A disk can be unmounted and still hold data that something depends on:
+
+- an LVM physical volume, with logical volumes that are mounted somewhere else
+- a member of a software RAID array
+- swap space
+- a raw device used directly by a database, a virtual machine, or a storage system such as
+  Ceph
+- a filesystem that is listed in `/etc/fstab` and is not mounted at the moment
+
+There is also the question of whether `/dev/sdb` is the disk you think it is. The `sdX` names
+are assigned at boot and can change between reboots.
+
+Check first. All of these only read:
+
+```bash
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,MODEL,SERIAL /dev/sdb   # the right disk, by size and serial?
+sudo blkid /dev/sdb*                                              # filesystem, LVM, RAID, or swap signatures
+sudo wipefs /dev/sdb                                              # lists signatures; with no options it erases nothing
+sudo pvs                                                          # an LVM physical volume?
+cat /proc/mdstat                                                  # part of a RAID array?
+swapon --show                                                     # swap?
+grep -v '^#' /etc/fstab                                           # compare with the UUID that blkid printed
+```
+
+It is safe to format only if all of these hold:
+
+1. The size, model, and serial match the disk you mean to format.
+2. `blkid` and `wipefs` show no signatures, or only ones you recognize and no longer need.
+3. The disk is not in `pvs`, `/proc/mdstat`, or `swapon`.
+4. Nothing in `/etc/fstab` or in your application configuration refers to it.
+5. You need nothing that is on it, or you have a backup.
+
+If the output shows a partition table or an old filesystem, tell me what it shows before you
+format. That is data, and the question becomes whether anyone needs it.
+
+Not verified: I cannot see the machine. Send the output of the first two commands and I can
+tell you what is on the disk.
+
+#### Ambiguous example 3: a yes or no question whose answer is "it depends"
+
+**Request**
+
+> Is it safe to git push --force?
+
+**Final answer**
+
+It depends on who else uses the branch.
+
+| Situation | Safe? |
+|---|---|
+| Your own branch, which nobody else has pulled or pushed to | Yes. This is normal after a rebase or an amended commit. |
+| A branch other people push to or have based work on | No. Their commits on the remote are replaced, and anyone who pulled the old history has to repair their copy. |
+| `main` or a release branch | No. Add a new commit or use `git revert`. |
+
+In the first case, use the form that checks the remote first:
+
+```bash
+git push --force-with-lease
+```
+
+It refuses to push if the remote branch has moved since your last fetch. That is the case
+where a plain `--force` overwrites someone else's commits.
+
+To see what a force push would discard:
+
+```bash
+git fetch origin
+git log --oneline HEAD..origin/<branch>     # commits on the remote that your push would remove
+```
+
+After an amend or a rebase, your own replaced commits appear in that list too. Look for
+commits that are not yours.
+
+One limit: `--force-with-lease` compares against your last fetch. If you fetched and did not
+look at what arrived, the push goes through.
+
+Verified in a local test with two clones, on Git 2.41:
+
+- A teammate's commit was on the remote and had not been fetched. `--force-with-lease` was
+  rejected with "stale info". A plain `--force` removed the teammate's commit.
+- After a fetch, `--force-with-lease` went through and removed the teammate's commit.
+
+#### Ambiguous example 4: a low-cost guess
+
+**Request**
+
+> Sort this list: banana, Apple, cherry, apple, 10, 9
+
+**Final answer**
+
+9, 10, Apple, apple, banana, cherry
+
+Assuming numbers come first in numeric order and words follow in alphabetical order, ignoring
+case. `Apple` stays ahead of `apple` because it came first in your list.
+
+If you wanted plain character order, which is what a default sort gives in most programming
+languages, it is: 10, 9, Apple, apple, banana, cherry.
+
+#### Ambiguous example 5: a missing input
+
+**Request**
+
+> Fix the bug in the attached file.
+
+**Final answer**
+
+I do not see an attached file in this conversation, so I cannot say what is wrong with it.
+Paste the code here, or give me the file's path if I have access to it.
+
+Two things will let me fix it in one pass:
+
+- the error message, or what the code does wrong
+- what it should do
+
+#### Ambiguous example 6: a premise to check before deleting
+
+**Request**
+
+> Nobody uses this storage account anymore. OK to delete it?
+
+**Final answer**
+
+Possibly. "Nobody uses it" is the part to check first. Deleting a storage account removes
+every container, file share, queue, and table in it, and I would not count on getting it
+back.
+
+Things that use a storage account without anyone remembering:
+
+- diagnostic settings and logs from other resources that write into it
+- a Function App or another service that names it in its configuration
+- VM boot diagnostics
+- Terraform state, or other deployment state
+- backups and exports written on a schedule
+- a static website, or files that are linked from somewhere else
+
+Check, read-only. `<resource-group>` and `<account>` are placeholders:
+
+```bash
+az account show --query name -o tsv                                   # the subscription you expect?
+ID=$(az storage account show -g <resource-group> -n <account> --query id -o tsv)
+az monitor metrics list --resource "$ID" --metric Transactions \
+  --offset 30d --interval P1D --aggregation Total -o table            # requests in the last 30 days
+az storage container list --account-name <account> --auth-mode login -o table   # what is in it?
+az lock list -g <resource-group> -o table                             # is a lock protecting it?
+```
+
+Your own checks count as transactions too, so look at the days before today.
+
+| What you find | Do this |
+|---|---|
+| Transactions in the last 30 days | Something uses it. Find the caller before going further. |
+| No transactions, and containers with data | Decide who owns the data and whether any of it must be kept. Copy what must be kept. |
+| No transactions, and nothing worth keeping | Do not delete yet. Block access first: disable public network access and shared-key access on the account. Wait two weeks. If nothing breaks and nobody asks, delete it. |
+
+Blocking access can be reversed in seconds. Deleting cannot be relied on to be reversible.
+Azure documents a way to recover a deleted account in some cases and for a limited time.
+Treat that as a last resort, not as the plan.
+
+Also search your infrastructure code and pipelines for the account name before deleting. A
+reference there fails on its next run.
+
+Not verified: I cannot see your subscription.
